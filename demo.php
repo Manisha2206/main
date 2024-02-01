@@ -15,6 +15,7 @@ else{
 			array_push($json,$row);
 		}
 		echo json_encode($json);
+		echo" test";
 	}
 	else if(isset($_POST['process']) && $_POST['process'] == 'create_update')
 	{

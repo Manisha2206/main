@@ -66,6 +66,6 @@ foreach ($arr as $key => $value) {
 	echo "<pre>";
 	print_r($key."-".$value);
 	echo "</pre>";
-	eXit();
+	echo "</pre>";
 }
 ?>
