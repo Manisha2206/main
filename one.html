@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<body>
+	
+	<table id="dataTable" border=1>
+		<thead>
+			<tr>
+				<th>Dept ID</th>
+				<th>Dept Name</th>
+				<th colspan=2>Action</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+	<br><br><hr>
+	<form id="myform">
+		Dept ID : <input type="text" name="id" id="id">
+		Dept Name : <input type="text" name="name" id="name">
+		<input type="submit" name="submit" id="submit" value="submit">
+	</form>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		//Fetch all the records
+		datafetch();
+
+		//Insert/Update data
+		$("#submit").click(function(event){
+			event.preventDefault();
+			var id = $('#id').val();
+			var name = $('#name').val();
+			$.ajax( {
+				url: "demo.php", 
+				type: "POST",
+				data: {process:'create_update',department_id : id, department_name:name},
+				dataType: "json",
+				success:function(data) {
+					alert(data);
+					datafetch();
+				}
+			});
+		});		
+	});
+	function datafetch()
+	{
+		$.ajax( {
+			url: "demo.php", 
+			type: "GET",
+			data: {process:'listing'},
+			success:function(data) {
+				var dt = JSON.parse(data);
+				var myhtml = "";
+
+				$.each(dt, function (index,value) {
+					myhtml += "<tr><td>"+value.department_id+"</td><td>"+value.department_name+"</td><td><button onclick='edit(this)'>Edit</button></td><td><button onclick='delete_data("+value.department_id+")'>Delete</button></td></tr>"
+				});
+				$('#dataTable tbody').html(myhtml);
+			}
+		});
+	}
+	function edit(data)
+	{
+		var row = data.parentNode.parentNode;
+
+        // Get data from nearby <td> elements
+        var deptId = row.cells[0].innerText;
+        var deptName = row.cells[1].innerText;
+
+        // Perform any action with the extracted data (e.g., display in a form for editing)
+        console.log("deptId: " + deptId);
+        console.log("deptName: " + deptName);
+        $('#id').val(deptId);
+        $('#name').val(deptName);
+        $('#id').prop('disabled', true);
+	}
+
+	function delete_data(deptId)
+	{
+		alert(deptId);
+		var result = confirm("Do you want to delete the record?");
+
+        // Check user's response
+		if (result) {
+			$.ajax( {
+				url: "demo.php", 
+				type: "POST",
+				data: {process:'delete', department_id : deptId},
+				success:function(data) {
+					alert(data);
+					datafetch();
+				}
+			});
+		}
+		else{
+			alert("Your record is safe");
+		}
+	}
+
+</script>
+</html>

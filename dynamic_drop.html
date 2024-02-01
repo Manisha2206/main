@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <style type="text/css">
+        .myclass{
+            color:green;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <p style="color:red">In line</p>
+    <p class="myclass">In File</p>
+    <p class="mysecondclass">External File</p>
+    <input type="file" name="image" multiple>
+    <a href="https://www.w3schools.com" target="_top">Visit W3Schools</a>
+    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="190">
+       <polygon points="100,10 40,180 190,60 10,60 160,180"
+       style="fill:lime;stroke:purple;stroke-width:5;fill-rule:evenodd;">
+   </svg>
+
+   <form>
+       <input type="text" name="firtsname" pattern="^[A-Za-z]{3,30}$">
+       <input type="submit" name="submit" value="submit">
+   </form>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Dropdowns</title>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+
+<label for="country">Country:</label>
+<select id="country" name="country">
+    <option value="usa">USA</option>
+    <option value="canada">Canada</option>
+    <!-- Add more countries as needed -->
+</select>
+
+<label for="state">State:</label>
+<select id="state" name="state"></select>
+
+<label for="city">City:</label>
+<select id="city" name="city"></select>
+
+<script>
+    $(document).ready(function() {
+        var data = {
+            "usa": {
+                "new_york": ["New York City", "Buffalo"],
+                "california": ["Los Angeles", "San Francisco"],
+            },
+            "canada": {
+                "ontario": ["Toronto", "Ottawa"],
+                "quebec": ["Montreal", "Quebec City"],
+            },
+        };
+        console.log(data);
+        console.log("---------");
+        $.ajax( {
+            url: "drop_data.php", 
+            type: "GET",
+            data: {process:'listing'},
+            success:function(data) {
+                var dt = JSON.parse(data);
+                console.log(dt);
+                // var myhtml = "";
+
+                // $.each(dt, function (index,value) {
+                //  myhtml += "<tr><td>"+value.department_id+"</td><td>"+value.department_name+"</td><td><button onclick='edit(this)'>Edit</button></td><td><button onclick='delete_data("+value.department_id+")'>Delete</button></td></tr>"
+                // });
+                // $('#dataTable tbody').html(myhtml);
+            }
+        });
+    });
+    // Sample data for states and cities (you would typically fetch this data from a server)
+    var data = {
+        "usa": {
+            "new_york": ["New York City", "Buffalo"],
+            "california": ["Los Angeles", "San Francisco"],
+        },
+        "canada": {
+            "ontario": ["Toronto", "Ottawa"],
+            "quebec": ["Montreal", "Quebec City"],
+        },
+    };
+
+    // Function to populate the state dropdown based on the selected country
+    function populateStates(country) {
+        var states = Object.keys(data[country]);
+        var stateDropdown = $('#state');
+
+        stateDropdown.empty();
+        stateDropdown.append('<option value="" selected>Select State</option>');
+
+        states.forEach(function (state) {
+            stateDropdown.append('<option value="' + state + '">' + state + '</option>');
+        });
+    }
+
+    // Function to populate the city dropdown based on the selected state
+    function populateCities(country, state) {
+        var cities = data[country] && data[country][state] ? data[country][state] : [];
+        var cityDropdown = $('#city');
+
+        cityDropdown.empty();
+        cityDropdown.append('<option value="" selected>Select City</option>');
+
+        cities.forEach(function (city) {
+            cityDropdown.append('<option value="' + city + '">' + city + '</option>');
+        });
+    }
+
+    // Initial population of state and city dropdowns
+    populateStates($('#country').val());
+    populateCities($('#country').val(), $('#state').val());
+
+    // Event listener for the change in the country dropdown
+    $('#country').change(function () {
+        var selectedCountry = $(this).val();
+        populateStates(selectedCountry);
+        populateCities(selectedCountry, $('#state').val());
+    });
+
+    // Event listener for the change in the state dropdown
+    $('#state').change(function () {
+        var selectedCountry = $('#country').val();
+        var selectedState = $(this).val();
+        populateCities(selectedCountry, selectedState);
+    });
+</script>
+
+</body>
+</html>
